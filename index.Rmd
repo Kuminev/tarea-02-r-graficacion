@@ -59,7 +59,7 @@ ca_covid19
 2. (10%) Genere un resumen de los datos con la función  ```summary() ```.
 
 ```{r}
-
+summary(ca_covid19)
 ```
 
 3. Genere gráficos de barras de los casos positivos (20%), recuperados (20%), activos (20%) y fallecidos (20%).
@@ -72,23 +72,80 @@ Las barras deben estar ordenadas de mayor (a la izquierda o arriba) a menor (a l
 - Cantidad de casos en cada barra.
 
 ```{r}
-
+library(ggplot2)
+ca_positivos.ordenado <- order(ca_covid19$positivos, decreasing=TRUE)
+ca_covid19.positivos <- ca_covid19[ca_positivos.ordenado,]
+ggplot(ca_covid19, aes(x=reorder(pais, -positivos), y=positivos)) +
+  ggtitle("Casos positivos de COVID-19 en Centroamerica y DOM") +
+  xlab("Pais") + 
+  ylab("Casos positivos") +  
+  geom_col() +
+  theme_bw()+
+  scale_colour_grey()+
+  geom_text(aes(label=positivos), vjust=-0.3, size=3.5
+)
 ```
 
 ```{r}
-
+ca_recuperados.ordenado <- order(ca_covid19$recuperados, decreasing=TRUE)
+ca_covid19.recuperados <- ca_covid19[ca_recuperados.ordenado,]
+ggplot(ca_covid19, aes(x=reorder(pais, -recuperados), y=recuperados))+
+  ggtitle("Casos recuperados de COVID-19 en Centroamerica y DOM") +
+  xlab("Pais") + 
+  ylab("Casos recuperados") +  
+  geom_col() +
+  theme_bw()+
+  geom_text(aes(label=recuperados), vjust=-0.3, size=3.5
+)
 ```
 
 ```{r}
-
+ca_activos.ordenado <- order(ca_covid19$activos, decreasing=TRUE)
+ca_covid19.activos <- ca_covid19[ca_activos.ordenado,]
+ggplot(ca_covid19, aes(x=reorder(pais, -activos), y=activos)) +
+  ggtitle("Casos activos de COVID-19 en Centroamerica y DOM") +
+  xlab("Pais") + 
+  ylab("Casos activos") +  
+  geom_col() +
+  theme_bw()+
+  geom_text(aes(label=activos), vjust=-0.3, size=3.5
+)
 ```
 
 ```{r}
-
+ca_fallecidos.ordenado <- order(ca_covid19$fallecidos, decreasing=TRUE)
+ca_covid19.fallecidos <- ca_covid19[ca_fallecidos.ordenado,]
+ggplot(ca_covid19, aes(x=reorder(pais, -fallecidos), y=fallecidos)) +
+  ggtitle("Casos fallecidos de COVID-19 en Centroamerica y DOM") +
+  xlab("Pais") + 
+  ylab("Casos fallecidos") +  
+  geom_col() +
+  theme_bw()+
+  geom_text(aes(label=fallecidos), vjust=-0.3, size=3.5
+)
 ```
 
 4. (10% - OPCIONAL) Genere un solo gráfico de barras que presente los cuatros tipos de casos, ya sea en barras apiladas o agrupadas.
 
 ```{r}
+library(gcookbook)
+paises_ca <- c(rep("PAN", 4), rep("CRI",4), rep("NIC",4), rep("SLV",4), rep("HND",4), rep("GTM",4), rep("BLZ",4), rep("DOM",4))
+condicion <- rep(c("fallecidos", "activos", "positivos", "recuperados"),4)
+valores_ca <- abs(c(ca_covid19$fallecidos, ca_covid19$activos, ca_covid19$positivos, ca_covid19$recuperados))
+centro_america_dom <- data.frame(paises_ca,condicion,valores_ca)
+
+ggplot(centro_america_dom, aes(fill=condicion, y=valores_ca, x=paises_ca)) + 
+    geom_bar(position="dodge", stat="identity")+
+  ggtitle("Comportamiento de casos en Centroamerica y Rep. Dominicana")+
+  scale_fill_discrete(name = "Condicion", labels = c("Activos", "Fallecidos", "Positivos", "Recuperados"))+
+ geom_abline(slope=0, intercept=2173,  col = "red",lty=2)
+
+ggplot(centro_america_dom, aes(fill=condicion, y=valores_ca, x=paises_ca)) + 
+    geom_bar(position="stack", stat="identity")+
+  ggtitle("Comportamiento de casos en Centroamerica y Rep. Dominicana")+
+  xlab("Pais") + 
+  ylab("Numero de casos")+
+  scale_fill_discrete(name = "Condicion", labels = c("Activos", "Fallecidos", "Positivos", "Recuperados"))
+
 
 ```
